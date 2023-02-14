@@ -3,7 +3,7 @@ name = "upsolver-sdk-python"
 version = "0.1.0"
 description = "Python API and SDK for Upsolver"
 authors = ["Your Name <you@example.com>"]
-license = "TBD"
+license = "MIT"
 readme = "README.md"
 packages = [{include = "upsolver/sdk"},{include = "upsolver/dbapi"}]
 
