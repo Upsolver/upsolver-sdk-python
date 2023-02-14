@@ -1,0 +1,110 @@
+name: Create Release
+
+on:
+  release:
+    branches: [ develop ]
+    types: [ published ]
+
+permissions: write-all
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure GIT
+        run: |
+          git config --global user.email "Your email"
+          git config --global user.name "Name of your GitHub App"
+      - name: Determine Version
+        id: release-version
+        run: |
+          echo "::set-output name=full::${{ github.ref_name }}"
+          SIMPLE=$(echo ${{ github.ref_name }} | sed -e s/^v//)
+          echo "::set-output name=simple::$SIMPLE"
+      - name: Update Version
+        run: |
+          sed -i -e "s/.*__version__.*/__version__ = '${{ steps.release-version.outputs.simple }}'/g" upsolver/__init__.py
+          sed -i -e "s/.*version =.*/version = \"${{ steps.release-version.outputs.simple }}\"/g" pyproject.toml
+
+      - name: Extract Change Notes
+        id: extract_changes
+        run: |
+          CHANGES=$(sed -n "/^# ${{ steps.release-version.outputs.full }}$/,/^# /p" CHANGELOG.md  | sed '$ d')
+          echo "CHANGES<<EOF" >> $GITHUB_ENV
+          echo "$CHANGES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 - --version 1.3.1
+          poetry install
+
+      - name: Commit & push updated files
+        run: |
+          git add upsolver/__init__.py pyproject.toml
+          git commit -am "Release ${{ steps.release-version.outputs.full }}"
+          git push origin HEAD:build_package
+
+      - name: Archive source code
+        run: |
+          zip -r ${{ github.event.repository.name }}-${{ steps.release-version.outputs.simple }}.zip . -x .zip -x .tar.gz -x .git/*  -x .lock -x dist/
+          zip -r ${{ github.event.repository.name }}-${{ steps.release-version.outputs.simple }}.tar.gz . -x .zip -x .tar.gz -x .git/*  -x .lock -x dist/
+
+      - name: Build package
+        run: poetry build
+
+      - name: Delete Release
+        if: ${{ github.event_name == 'release' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete ${{ steps.release-version.outputs.full }} -y
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ${{ env.CHANGES }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/upsolver_sdk_python-${{ steps.release-version.outputs.simple }}.tar.gz
+          asset_name: upsolver_sdk_python.tar.gz
+          asset_content_type: application/tar+gz
+
+      - name: Upload Release Asset [zipped source code (.zip)]
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.event.repository.name }}-${{ steps.release-version.outputs.simple }}.zip
+          asset_name: ${{ github.event.repository.name }}-${{ steps.release-version.outputs.simple }}.zip
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset [zipped source code (.tar.gz)]
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.event.repository.name }}-${{ steps.release-version.outputs.simple }}.tar.gz
+          asset_name: ${{ github.event.repository.name }}-${{ steps.release-version.outputs.simple }}.tar.gz
+          asset_content_type: application/tar+gz
