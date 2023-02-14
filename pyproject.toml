@@ -3,15 +3,16 @@ name = "upsolver-sdk-python"
 version = "0.1.0"
 description = "Python API and SDK for Upsolver"
 authors = ["Your Name <you@example.com>"]
-license = "TBD"
-readme = ["README.md", "upsolver/dbapi/README.md"]
+
+license = "MIT"
+readme = "README.md"
 packages = [
+    {include = "upsolver/__init__.py"},
     {include = "upsolver/utils.py"},
     {include = "upsolver/sdk"},
     {include = "upsolver/dbapi"},
     {include = "upsolver/client"}
     ]
-
 [tool.poetry.dependencies]
 python = "^3.7"
 requests = "2.28.2"
