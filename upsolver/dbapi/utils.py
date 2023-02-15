@@ -17,7 +17,7 @@ def get_duration_in_seconds(duration):
     if type(duration) == int:
         return float(duration)
     if type(duration) == str:
-        return convert_time_str(None, None, duration)
+        return convert_time_str(duration)
     raise ValueError('Invalid type of duration')
 
 

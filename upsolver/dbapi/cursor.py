@@ -34,6 +34,13 @@ class Cursor:
         self._iterator = None
         self._closed = False
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, error_type, error, traceback):
+        self.close()
+        return error is None
+
     @check_closed
     def execute(self, operation: SQLQuery, parameters: Optional[QueryParameters] = None):
         """

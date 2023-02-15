@@ -3,17 +3,24 @@ name = "upsolver-sdk-python"
 version = "0.1.0"
 description = "Python API and SDK for Upsolver"
 authors = ["Your Name <you@example.com>"]
-license = "MIT"
-readme = "README.md"
-packages = [{include = "upsolver/sdk"},{include = "upsolver/dbapi"}]
 
+license = "MIT"
+readme = ["README.md", "upsolver/dbapi/README.md"]
+packages = [
+    {include = "upsolver/utils.py"},
+    {include = "upsolver/sdk"},
+    {include = "upsolver/dbapi"},
+    {include = "upsolver/client"}
+    ]
 [tool.poetry.dependencies]
 python = "^3.7"
 requests = "2.28.2"
-upsolver-cli = "0.6.4"
+yarl = "1.8.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
+pytest-mock = "^3.10.0"
+requests-mock = "1.10.0"
 
 [build-system]
 requires = ["poetry-core"]

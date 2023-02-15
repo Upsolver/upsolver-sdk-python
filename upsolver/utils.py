@@ -3,7 +3,6 @@ from logging import Logger
 from pathlib import Path
 from typing import Any, Dict, Optional, Protocol, Type, TypeVar
 
-import click
 from yarl import URL
 
 from .client import errors
@@ -15,7 +14,7 @@ def convert_to_seconds(s: str) -> float:
     return float(s[:-1]) * seconds_per_unit[s[-1]]
 
 
-def convert_time_str(ctx: click.Context, param, value: Any) -> Any:
+def convert_time_str(value: Any) -> Any:
     try:
         return convert_to_seconds(value)
     except Exception:
