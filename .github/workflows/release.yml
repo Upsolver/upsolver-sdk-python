@@ -59,32 +59,12 @@ jobs:
       - name: Build package
         run: poetry build
 
-      - name: Delete Release
-        if: ${{ github.event_name == 'release' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release delete ${{ steps.release-version.outputs.full }} -y
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            ${{ env.CHANGES }}
-          draft: false
-          prerelease: false
-
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./dist/upsolver_sdk_python-${{ steps.release-version.outputs.simple }}.tar.gz
           asset_name: upsolver_sdk_python.tar.gz
           asset_content_type: application/tar+gz
@@ -94,7 +74,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ github.event.release.upload_url }}
           asset_path: ${{ github.event.repository.name }}-${{ steps.release-version.outputs.simple }}.zip
           asset_name: ${{ github.event.repository.name }}-${{ steps.release-version.outputs.simple }}.zip
           asset_content_type: application/zip
@@ -104,7 +84,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ github.event.release.upload_url }}
           asset_path: ${{ github.event.repository.name }}-${{ steps.release-version.outputs.simple }}.tar.gz
           asset_name: ${{ github.event.repository.name }}-${{ steps.release-version.outputs.simple }}.tar.gz
           asset_content_type: application/tar+gz
