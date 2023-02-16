@@ -14,7 +14,6 @@ jobs:
       - uses: actions/checkout@v3
       - name: Configure GIT
         run: |
-          git config --global user.email "Your email"
           git config --global user.name "Name of your GitHub App"
       - name: Determine Version
         id: release-version
