@@ -23,7 +23,6 @@ jobs:
           echo "::set-output name=simple::$SIMPLE"
       - name: Update Version
         run: |
-          sed -i -e "s/.*__version__.*/__version__ = '${{ steps.release-version.outputs.simple }}'/g" upsolver/__init__.py
           sed -i -e "s/.*version =.*/version = \"${{ steps.release-version.outputs.simple }}\"/g" pyproject.toml
 
       - name: Extract Change Notes
