@@ -1,6 +1,5 @@
 import requests
 
-
 def generate_local_api_token(user_email: str, user_password: str, url: str) -> str:
     data = {
         "displayData": {

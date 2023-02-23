@@ -7,22 +7,25 @@ import logging
 from pathlib import Path
 from typing import Optional, Sequence, Type, Union
 
-from ..client import errors as upsolver_errors
+from upsolver.client import errors as upsolver_errors
 
-from .utils import check_closed
-from .exceptions import *
-from .types_definitions import (
+from upsolver.dbapi.utils import check_closed
+from upsolver.dbapi.exceptions import (
+    InterfaceError,
+    NotSupportedError,OperationalError,
+    DatabaseError
+)
+from upsolver.dbapi.types_definitions import (
     QueryParameters,
     ResultRow,
     ResultSet,
     SQLQuery,
     ColumnDescription,
     ProcName,
-    ProcArgs,
+    ProcArgs
 )
 
 logger = logging.getLogger(__name__)
-
 
 class Cursor:
     """A PEP 249 compliant Cursor protocol."""

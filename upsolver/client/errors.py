@@ -13,7 +13,6 @@ from upsolver.client.requester import UpsolverResponse
 class ExitCode(Enum):
     InternalErr = -999
 
-    NetworkErr = -1
     ApiErr = -2
     ConfigurationErr = -3
     ApiUnavailable = -4
@@ -30,10 +29,7 @@ class ExitCode(Enum):
 
 - InternalErr: programming error / something went wrong
 
-- ConfigErr: errors related to configuration (e.g. failure to read config from disk)
-
 - RequestErr: sub-divides into two major classes:
-  1. NetworkErr: something went wrong at the network layer (e.g. request timeout or invalid host)
 
   2. ApiErr: upsolver API reports an error (non 2XX response) e.g. invalid auth credentials. This
      class of errors also includes issues *with* upsolvers API, i.e. invalid/unexpected responses.
@@ -52,7 +48,7 @@ class ExitCode(Enum):
           │                      │                           │                                        │
    ┌─────────────┐         ┌───────────┐              ┌─────────────┐                         ┌───────────────┐
    │ InternalErr │         │ ConfigErr │              │ RequestErr  │                         │ OperationErr  │
-   └─────────────┘         └───────────┘              └─────────────┘                         └───────────────┘
+   └─────────────┘         └───────────┘ki              └─────────────┘                         └───────────────┘
           ▲                      ▲                           ▲                                        ▲
           │                      │                           │                                        │
           │                      │                  ┌────────┴───────┐                     ┌──────────┴────────────┐
@@ -103,49 +99,12 @@ class InternalErr(CliErr):
 class NotImplementedErr(InternalErr):
     pass
 
-
-class FormattingErr(InternalErr):
-    def __init__(self, v: Any, desired_fmt: str) -> None:
-        """
-        :param v: The value which caused the formatting error
-        """
-        self.v = v
-
-
-# Configuration Errors
-class ConfigErr(CliErr):
-    @staticmethod
-    def exit_code() -> ExitCode:
-        return ExitCode.ConfigurationErr
-
-
-class ConfigReadFail(ConfigErr):
-    def __init__(self, path: Path, why: Optional[str] = None):
-        self.path = path
-        self.why = why
-
-    def __str__(self) -> str:
-        return f'Failed to read configuration from {self.path}' + \
-               ('' if self.why is None else f': {self.why}')
-
-
 # Request Errors
 class RequestErr(CliErr, metaclass=ABCMeta):
     """
     Generalized error that occured when issuing a request to the Upsolver API
     """
     pass
-
-
-class NetworkErr(RequestErr):
-    """
-    Request has failed due to network issues, e.g. timeout, unknown host, etc. In other words,
-    we don't have a valid http response object available.
-    """
-
-    @staticmethod
-    def exit_code() -> ExitCode:
-        return ExitCode.NetworkErr
 
 
 class ApiErr(RequestErr):

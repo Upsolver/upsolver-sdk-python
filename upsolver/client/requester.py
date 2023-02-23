@@ -110,30 +110,3 @@ class Requester(object):
     def patch(self, path: str, json: Optional[dict] = None) -> UpsolverResponse:
         payload = json if json is not None else {}
         return self._send(path, Request(method='PATCH'), payload)
-
-    def get_list(self, path: str, list_field_name: Optional[str] = None) -> list:
-        resp = self.get(path)
-
-        def raise_err() -> None:
-            raise errors.PayloadErr(resp, 'expected list of elements')
-
-        try:
-            j = resp.json()
-
-            # if given a list_field_name, look for the list there and only there
-            if list_field_name is not None:
-                if type(j) is not dict or j.get(list_field_name) is None:
-                    raise_err()
-                else:
-                    return j[list_field_name]
-
-            # otherwise, the entire response body must be the list
-            if type(j) is list:
-                return j
-
-            # unknown payload
-            raise_err()
-        except Exception:
-            raise_err()
-
-        return []  # placate mypy

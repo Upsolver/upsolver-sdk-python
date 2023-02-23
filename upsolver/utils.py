@@ -35,32 +35,6 @@ def get_logger(path: Optional[str] = None) -> Logger:
     else:
         return logging.getLogger('CLI')
 
-
-def ensure_exists(path: Path) -> None:
-    """
-    Ensures file exists for the provided path.
-    """
-    if not path.exists():
-        if not path.parent.exists():
-            path.parent.mkdir(parents=True)
-        path.touch()
-
-
-def parse_url(url: Optional[str]) -> Optional[URL]:
-    if url is None:
-        return None
-
-    # We remove the path since we rely on it being empty when we append other paths in the program
-    burl = URL(url).with_path("")
-    if burl.is_absolute():
-        return burl
-    else:
-        if url.startswith('localhost'):
-            return URL('http://' + url)
-        else:
-            return URL('https://' + url)
-
-
 def flatten(d: dict, parent: Optional[str] = None, sep: str = '.') -> dict:
     """
     flatten({'a': {'b': {'c': 1}}, 'd': {'e': [1, 2, 3]}, 'f': 'foo'})
@@ -111,34 +85,3 @@ TAnyDataclass = TypeVar('TAnyDataclass', bound=AnyDataclass)
 
 def from_dict(tpe: Type[TAnyDataclass], d: dict) -> TAnyDataclass:
     return tpe.from_dict(d)
-
-
-class HasId(Protocol):
-    id: str
-
-
-class HasNameAndId(Protocol):
-    id: str
-    name: str
-
-
-THasNameAndId = TypeVar('THasNameAndId', bound='HasNameAndId')
-
-
-def find_by_name_or_id(name_or_id: str, ls: list) -> THasNameAndId:
-    for x in ls:
-        if x.name == name_or_id or x.id == name_or_id:
-            return x
-
-    raise errors.EntityNotFound(name_or_id, [f'(id={x.id}, name={x.name}]' for x in ls])
-
-
-THasId = TypeVar('THasId', bound='HasId')
-
-
-def find_by_id(id: str, ls: list) -> THasId:
-    for x in ls:
-        if x.id == id:
-            return x
-
-    raise errors.EntityNotFound(id, [x.id for x in ls])
