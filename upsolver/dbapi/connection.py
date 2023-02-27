@@ -15,7 +15,7 @@ from upsolver.dbapi.utils import (
     check_closed,
     DBAPIResponsePoller
 )
-from upsolver.dbapi.exceptions import NotSupportedError
+from upsolver.dbapi.exceptions import NotSupportedError, OperationalError, InterfaceError
 from upsolver.dbapi.cursor import Cursor
 
 logger = logging.getLogger(__name__)

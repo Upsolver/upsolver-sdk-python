@@ -12,8 +12,10 @@ from upsolver.client import errors as upsolver_errors
 from upsolver.dbapi.utils import check_closed
 from upsolver.dbapi.exceptions import (
     InterfaceError,
-    NotSupportedError,OperationalError,
-    DatabaseError
+    NotSupportedError,
+    OperationalError,
+    DatabaseError,
+    InternalError
 )
 from upsolver.dbapi.types_definitions import (
     QueryParameters,

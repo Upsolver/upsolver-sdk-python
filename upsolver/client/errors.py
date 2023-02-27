@@ -1,3 +1,4 @@
+
 import json
 from abc import ABCMeta, abstractmethod
 from enum import Enum
@@ -18,7 +19,6 @@ class ExitCode(Enum):
     ApiUnavailable = -4
     InvalidOption = -5
 
-    UserHasNoOrgs = -100
     EntityNotFound = -101
 
 
@@ -28,6 +28,7 @@ class ExitCode(Enum):
   instead of checking for specific error messages).
 
 - InternalErr: programming error / something went wrong
+
 
 - RequestErr: sub-divides into two major classes:
 
@@ -43,26 +44,26 @@ class ExitCode(Enum):
                                                      └──────┘
                                                          ▲
                                                          │
-          ┌──────────────────────┬───────────────────────┴───┬────────────────────────────────────────┐
-          │                      │                           │                                        │
-          │                      │                           │                                        │
-   ┌─────────────┐         ┌───────────┐              ┌─────────────┐                         ┌───────────────┐
-   │ InternalErr │         │ ConfigErr │              │ RequestErr  │                         │ OperationErr  │
-   └─────────────┘         └───────────┘ki              └─────────────┘                         └───────────────┘
-          ▲                      ▲                           ▲                                        ▲
-          │                      │                           │                                        │
-          │                      │                  ┌────────┴───────┐                     ┌──────────┴────────────┐
-          │                      │                  │                │                     │                       │
-          │                      │                  │                │                     │                       │
-┌───────────────────┐    ┌───────────────┐   ┌────────────┐     ┌─────────┐        ┌───────────────┐     ┌──────────────────┐
-│ NotImplementedErr │    │ConfigReadFail │   │ NetworkErr │     │ ApiErr  │        │ UserHasNoOrgs │     │ ClusterNotFound  │
-└───────────────────┘    └───────────────┘   └────────────┘     └─────────┘        └───────────────┘     └──────────────────┘
-                                                                     ▲
-                                                      ┌──────────────┴───────────────┐
-                                                      │                              │
-                                            ┌───────────────────┐        ┌───────────────────────┐
-                                            │ PayloadPathKeyErr │        │ PendingResultTimeout  │
-                                            └───────────────────┘        └───────────────────────┘
+          ┌──────────────────────────────────────────────┬────────────────────────────────────────┐
+          │                                              │                                        │
+          │                                              │                                        │
+   ┌─────────────┐                                 ┌─────────────┐                         ┌───────────────┐
+   │ InternalErr │                                 │ RequestErr  │                         │ OperationErr  │
+   └─────────────┘                                 └─────────────┘                         └───────────────┘
+                                                         ▲                                        ▲
+                                                         │                                        │
+                                                         │                               ┌────────┴────────────┐
+                                                         │                               │                     │
+                                                         │                               │                     │
+                                                    ┌─────────┐                  ┌───────────────┐     ┌─────────────────┐
+                                                    │ ApiErr  │                  │ ApiUnavailable│     │ EntityNotFound  │
+                                                    └─────────┘                  └───────────────┘     └─────────────────┘
+                                                         ▲
+                                          ┌──────────────┴───────────────┐
+                                          │                              │
+                                ┌───────────────────┐        ┌───────────────────────┐
+                                │ PayloadPathKeyErr │        │ PendingResultTimeout  │
+                                └───────────────────┘        └───────────────────────┘
 """
 
 
@@ -95,9 +96,6 @@ class InternalErr(CliErr):
     def exit_code() -> ExitCode:
         return ExitCode.InternalErr
 
-
-class NotImplementedErr(InternalErr):
-    pass
 
 # Request Errors
 class RequestErr(CliErr, metaclass=ABCMeta):
@@ -217,19 +215,6 @@ class ApiUnavailable(OperationErr):
 
     def __str__(self) -> str:
         return f'Failed to retrieve API address from {self.base_url}'
-
-
-class UserHasNoOrgs(OperationErr):
-    @staticmethod
-    def exit_code() -> ExitCode:
-        return ExitCode.UserHasNoOrgs
-
-    def __init__(self, email: Optional[str] = None) -> None:
-        self.email = email
-
-    def __str__(self) -> str:
-        email_part = f'{self.email} ' if self.email is not None else ''
-        return f'User {email_part}has no organization available'
 
 
 class EntityNotFound(OperationErr):
