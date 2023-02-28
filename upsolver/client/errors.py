@@ -1,37 +1,15 @@
 
 import json
-from abc import ABCMeta, abstractmethod
-from enum import Enum
+from abc import ABCMeta
 from json import JSONDecodeError
-from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 
 from yarl import URL
 
 from upsolver.client.requester import UpsolverResponse
 
 
-class ExitCode(Enum):
-    InternalError = -999
-    ApiError = -2
-    ApiUnavailable = -4
-    InvalidOption = -5
-
-
 """
-- Error: All errors thrown by upsolver sdk python code extend this class
-
-- InternalError: programming error / something went wrong
-
-
-- RequestError: sub-divides into two major classes:
-
-  2. ApiErr: upsolver API reports an error (non 2XX response) e.g. invalid auth credentials. This
-     class of errors also includes issues *with* upsolvers API, i.e. invalid/unexpected responses.
-
-- OperationErr: API works as expected but the operation is invalid, e.g. attempting to delete a non
-  existent cluster.
-
 
                                                      ┌───────┐
                                                      | Error |
@@ -63,15 +41,11 @@ class ExitCode(Enum):
 ┌─────────┴───────────┐      ┌─────────┴─────────────┐      ┌─────┴────────┐      ┌─────┴─────┐
 │ PayloadPathKeyError │      │ PendingResultTimeout  │      | PayloadError |      | AuthError |
 └─────────────────────┘      └───────────────────────┘      └──────────────┘      └───────────┘
-PayloadErr
+
 """
 
 class Error(Exception, metaclass=ABCMeta):
     """Base error outlined in PEP 249."""
-    @staticmethod
-    @abstractmethod
-    def exit_code() -> ExitCode:
-        pass
 
     def __str__(self) -> str:
         # make an effort to extract a message
@@ -96,9 +70,6 @@ class InvalidOptionError(InterfaceError):
     Raised for errors in the database's operation.
 
     """
-    @staticmethod
-    def exit_code() -> ExitCode:
-        return ExitCode.InvalidOption
 
 class DatabaseError(Error, RuntimeError):
     """
@@ -122,9 +93,6 @@ class InternalError(DatabaseError):
     Raised when the database encounters an internal error.
 
     """
-    @staticmethod
-    def exit_code() -> ExitCode:
-        return ExitCode.InternalError
 
 
 class NotSupportedError(DatabaseError, NotImplementedError):
@@ -148,10 +116,6 @@ class ApiError(RequestError):
     Invalid usage of API (invalid credentials, bad method call). In other words, we have a valid
     http response object available and the status code is not 2XX.
     """
-
-    @staticmethod
-    def exit_code() -> ExitCode:
-        return ExitCode.ApiError
 
     def __init__(self, resp: UpsolverResponse) -> None:
         self.resp = resp
@@ -240,9 +204,6 @@ class PayloadPathKeyError(ApiError):
 
 
 class ApiUnavailable(OperationalError):
-    @staticmethod
-    def exit_code() -> ExitCode:
-        return ExitCode.ApiUnavailable
 
     def __init__(self, base_url: URL) -> None:
         self.base_url = base_url
