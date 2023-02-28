@@ -7,16 +7,10 @@ import logging
 from pathlib import Path
 from typing import Optional, Sequence, Type, Union
 
-from upsolver.client import errors as upsolver_errors
+import upsolver.client.errors as errors
 
 from upsolver.dbapi.utils import check_closed
-from upsolver.dbapi.exceptions import (
-    InterfaceError,
-    NotSupportedError,
-    OperationalError,
-    DatabaseError,
-    InternalError
-)
+
 from upsolver.dbapi.types_definitions import (
     QueryParameters,
     ResultRow,
@@ -55,17 +49,17 @@ class Cursor:
         """
         logger.debug(f'{self.__class__.__name__} execute query "{operation}"')
         if parameters is not None:
-            raise NotSupportedError
+            raise errors.NotSupportedError
 
         try:
             query_response = self._connection.query(operation)
             return self._prepare_query_results(query_response)
-        except upsolver_errors.InternalErr as err:
-            raise InternalError(err) from err
-        except upsolver_errors.RequestErr as err:
-            raise OperationalError(err) from err
+        except errors.InternalError as err:
+            raise errors.InternalError(err) from err
+        except errors.RequestError as err:
+            raise errors.OperationalError(err) from err
         except Exception as err:
-            raise DatabaseError(err) from err
+            raise errors.DatabaseError(err) from err
 
     @check_closed
     def executefile(self, file_path: str):
@@ -76,7 +70,7 @@ class Cursor:
 
         p = Path(file_path)
         if not p.exists():
-            raise InterfaceError(f'Failed to execute the operation because {file_path} is invalid')
+            raise errors.InterfaceError(f'Failed to execute the operation because {file_path} is invalid')
         operation = p.read_text()
         return self.execute(operation)
 
@@ -108,10 +102,10 @@ class Cursor:
                 yield next_page.get('message')
 
     def executemany(self, operation: SQLQuery, seq_of_parameters: Sequence[QueryParameters]):
-        raise NotSupportedError
+        raise errors.NotSupportedError
 
     def callproc(self, procname: ProcName, parameters: Optional[ProcArgs] = None) -> Optional[ProcArgs]:
-        raise NotSupportedError
+        raise errors.NotSupportedError
 
     @property
     @check_closed
@@ -174,7 +168,7 @@ class Cursor:
         logger.debug(f"Fetchone {self.__class__.__name__}")
 
         if self._iterator is None:
-            raise InterfaceError('Failed to fetch results')
+            raise errors.InterfaceError('Failed to fetch results')
 
         try:
             return next(self._iterator)
@@ -198,7 +192,7 @@ class Cursor:
         logger.debug(f"{self.__class__.__name__} fetchmany")
 
         if self._iterator is None:
-            raise InterfaceError('Failed to fetch results')
+            raise errors.InterfaceError('Failed to fetch results')
 
         result = []
         for _ in range(size or self.arraysize):
@@ -223,7 +217,7 @@ class Cursor:
         logger.debug(f"{self.__class__.__name__} fetchall")
 
         if self._iterator is None:
-            raise InterfaceError('Failed to fetch results')
+            raise errors.InterfaceError('Failed to fetch results')
 
         result = []
         while True:
@@ -236,13 +230,13 @@ class Cursor:
 
     @check_closed
     def nextset(self) -> Optional[bool]:
-        raise NotSupportedError
+        raise errors.NotSupportedError
 
     def setinputsizes(self, sizes: Sequence[Optional[Union[int, Type]]]) -> None:
-        raise NotSupportedError
+        raise errors.NotSupportedError
 
     def setoutputsize(self, size: int, column: Optional[int]) -> None:
-        raise NotSupportedError
+        raise errors.NotSupportedError
 
     @check_closed
     def close(self) -> None:

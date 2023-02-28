@@ -48,7 +48,7 @@ class SimpleResponsePoller(object):
         :param start_time: time (in seconds since the Epoch) at which polling has started.
         """
         def raise_err() -> None:
-            raise errors.ApiErr(resp)
+            raise errors.ApiError(resp)
 
         sc = resp.status_code
         if int(sc / 100) != 2:
@@ -56,7 +56,7 @@ class SimpleResponsePoller(object):
 
         def verify_json(j: dict) -> dict:
             if 'status' not in j:
-                raise errors.PayloadErr(resp, 'expected "status" field in response object')
+                raise errors.PayloadError(resp, 'expected "status" field in response object')
             return j
 
         def extract_json() -> dict:
@@ -65,10 +65,10 @@ class SimpleResponsePoller(object):
                 return resp_json
             elif type(resp_json[0]) is dict:
                 if len(resp_json) > 1:
-                    raise errors.PayloadErr(resp, 'got list with multiple objects')
+                    raise errors.PayloadError(resp, 'got list with multiple objects')
                 return resp_json[0]
             else:
-                raise errors.PayloadErr(resp, 'failed to find result object')
+                raise errors.PayloadError(resp, 'failed to find result object')
 
         rjson = verify_json(extract_json())
         status = rjson['status']

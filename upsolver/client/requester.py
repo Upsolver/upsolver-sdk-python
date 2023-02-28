@@ -19,9 +19,9 @@ ResponseValidator = Callable[[Response], Response]
 def default_resp_validator(resp: Response) -> Response:
     uresp = UpsolverResponse(resp)
     if resp.status_code == 403:
-        raise errors.AuthErr(uresp)
+        raise errors.AuthError(uresp)
     if int(resp.status_code / 100) != 2:
-        raise errors.ApiErr(uresp)
+        raise errors.ApiError(uresp)
     return resp
 
 

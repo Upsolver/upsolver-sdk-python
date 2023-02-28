@@ -28,7 +28,7 @@ class UpsolverResponse(object):
         try:
             return NestedDictAccessor(payload)[item]
         except KeyError:
-            raise errors.PayloadPathKeyErr(self, item)
+            raise errors.PayloadPathKeyError(self, item)
 
     def get(self, item: str) -> Optional[Any]:
         try:

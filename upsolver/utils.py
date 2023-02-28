@@ -18,7 +18,7 @@ def convert_time_str(value: Any) -> Any:
     try:
         return convert_to_seconds(value)
     except Exception:
-        raise errors.InvalidOptionErr(f'Cannot convert \'{value}\' to seconds '
+        raise errors.InvalidOptionError(f'Cannot convert \'{value}\' to seconds '
                                       '(valid examples: 0.25s, 1.5m)')
 
 

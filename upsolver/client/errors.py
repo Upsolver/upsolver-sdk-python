@@ -12,25 +12,19 @@ from upsolver.client.requester import UpsolverResponse
 
 
 class ExitCode(Enum):
-    InternalErr = -999
-
-    ApiErr = -2
-    ConfigurationErr = -3
+    InternalError = -999
+    ApiError = -2
     ApiUnavailable = -4
     InvalidOption = -5
 
-    EntityNotFound = -101
-
 
 """
-- CliErr: All errors thrown by upsolver cli code extend this class. It can be easily mapped to an
-  exit code, which serves to make automation easier (cli tooling can work with the exit code
-  instead of checking for specific error messages).
+- Error: All errors thrown by upsolver sdk python code extend this class
 
-- InternalErr: programming error / something went wrong
+- InternalError: programming error / something went wrong
 
 
-- RequestErr: sub-divides into two major classes:
+- RequestError: sub-divides into two major classes:
 
   2. ApiErr: upsolver API reports an error (non 2XX response) e.g. invalid auth credentials. This
      class of errors also includes issues *with* upsolvers API, i.e. invalid/unexpected responses.
@@ -39,39 +33,41 @@ class ExitCode(Enum):
   existent cluster.
 
 
-                                                     ┌──────┐
-                                                     │CliErr│
-                                                     └──────┘
+                                                     ┌───────┐
+                                                     | Error |
+                                                     └───────┘
                                                          ▲
                                                          │
-          ┌──────────────────────────────────────────────┬────────────────────────────────────────┐
-          │                                              │                                        │
-          │                                              │                                        │
-   ┌─────────────┐                                 ┌─────────────┐                         ┌───────────────┐
-   │ InternalErr │                                 │ RequestErr  │                         │ OperationErr  │
-   └─────────────┘                                 └─────────────┘                         └───────────────┘
-                                                         ▲                                        ▲
-                                                         │                                        │
-                                                         │                               ┌────────┴────────────┐
-                                                         │                               │                     │
-                                                         │                               │                     │
-                                                    ┌─────────┐                  ┌───────────────┐     ┌─────────────────┐
-                                                    │ ApiErr  │                  │ ApiUnavailable│     │ EntityNotFound  │
-                                                    └─────────┘                  └───────────────┘     └─────────────────┘
-                                                         ▲
-                                          ┌──────────────┴───────────────┐
-                                          │                              │
-                                ┌───────────────────┐        ┌───────────────────────┐
-                                │ PayloadPathKeyErr │        │ PendingResultTimeout  │
-                                └───────────────────┘        └───────────────────────┘
+                                  ┌──────────────────────────────────────────────────────────┐
+                          ┌───────┴───────┐                                           ┌──────┴─────────┐
+                          │ DatabaseError │                                           | InterfaceError |
+                          └───────────────┘                                           └────────────────┘
+                                  ▲                                                          |
+                                  │                                                ┌─────────┴──────────┐
+       ┌──────────────────────────┬───────────────────────────┐                    | InvalidOptionError |
+┌──────┴────────┐        ┌────────┴──────────┐        ┌───────┴──────────┐         └────────────────────┘
+| InternalError |        | NotSupportedError |        | OperationalError |
+└───────────────┘        └───────────────────┘        └──────────────────┘
+                                                              ▲
+                                                              |
+                                       ┌──────────────────────┴────────────────────────┐
+                                ┌──────┴───────┐                                ┌──────┴─────────┐
+                                │ RequestError │                                | ApiUnavailable |
+                                └──────────────┘                                └────────────────┘
+                                       ▲
+                                  ┌────┴─────┐
+                                  | ApiError |
+                                  └──────────┘
+                                       ▲
+          ┌────────────────────────────┴────────────────────────────────────────────────┐
+┌─────────┴───────────┐      ┌─────────┴─────────────┐      ┌─────┴────────┐      ┌─────┴─────┐
+│ PayloadPathKeyError │      │ PendingResultTimeout  │      | PayloadError |      | AuthError |
+└─────────────────────┘      └───────────────────────┘      └──────────────┘      └───────────┘
+PayloadErr
 """
 
-
-class CliErr(Exception, metaclass=ABCMeta):
-    """
-    Root of all Errors
-    """
-
+class Error(Exception, metaclass=ABCMeta):
+    """Base error outlined in PEP 249."""
     @staticmethod
     @abstractmethod
     def exit_code() -> ExitCode:
@@ -84,28 +80,70 @@ class CliErr(Exception, metaclass=ABCMeta):
 
         return self.__class__.__name__
 
+class InterfaceError(Error):
+    """
+    Interface error outlined in PEP 249.
 
-class InvalidOptionErr(CliErr):
+    Raised for errors with the database interface.
+
+    """
+
+
+class InvalidOptionError(InterfaceError):
+    """
+    Operational error outlined in PEP 249.
+
+    Raised for errors in the database's operation.
+
+    """
     @staticmethod
     def exit_code() -> ExitCode:
         return ExitCode.InvalidOption
 
+class DatabaseError(Error, RuntimeError):
+    """
+    Database error outlined in PEP 249.
 
-class InternalErr(CliErr):
+    Raised for errors with the database.
+
+    """
+class OperationalError(DatabaseError):
+    """
+    Operational error outlined in PEP 249.
+
+    Raised for errors in the database's operation.
+
+    """
+
+class InternalError(DatabaseError):
+    """
+    Integrity error outlined in PEP 249.
+
+    Raised when the database encounters an internal error.
+
+    """
     @staticmethod
     def exit_code() -> ExitCode:
-        return ExitCode.InternalErr
+        return ExitCode.InternalError
 
+
+class NotSupportedError(DatabaseError, NotImplementedError):
+    """
+    Not supported error outlined in PEP 249.
+
+    Raised when an unsupported operation is attempted.
+
+    """
 
 # Request Errors
-class RequestErr(CliErr, metaclass=ABCMeta):
+class RequestError(OperationalError):
     """
     Generalized error that occured when issuing a request to the Upsolver API
     """
     pass
 
 
-class ApiErr(RequestErr):
+class ApiError(RequestError):
     """
     Invalid usage of API (invalid credentials, bad method call). In other words, we have a valid
     http response object available and the status code is not 2XX.
@@ -113,7 +151,7 @@ class ApiErr(RequestErr):
 
     @staticmethod
     def exit_code() -> ExitCode:
-        return ExitCode.ApiErr
+        return ExitCode.ApiError
 
     def __init__(self, resp: UpsolverResponse) -> None:
         self.resp = resp
@@ -153,12 +191,21 @@ class ApiErr(RequestErr):
                f'{self.detail_message()} [{req_id_part}]'
 
 
-class AuthErr(ApiErr):
+class AuthError(ApiError):
     def __str__(self) -> str:
         return 'Authentication error, please run \'login\' command to create a valid token'
 
+class PayloadError(ApiError):
+    def __init__(self, resp: UpsolverResponse, msg: str):
+        super().__init__(resp)
+        self.msg = msg
 
-class PendingResultTimeout(ApiErr):
+    def __str__(self) -> str:
+        return f'Payload err ({self.msg}): {self.resp}'
+
+
+
+class PendingResultTimeout(ApiError):
     def __init__(self, resp: UpsolverResponse):
         super().__init__(resp)
 
@@ -170,16 +217,7 @@ class PendingResultTimeout(ApiErr):
         return f'Timeout while waiting for results to become ready{req_id_part}'
 
 
-class PayloadErr(ApiErr):
-    def __init__(self, resp: UpsolverResponse, msg: str):
-        super().__init__(resp)
-        self.msg = msg
-
-    def __str__(self) -> str:
-        return f'Payload err ({self.msg}): {self.resp}'
-
-
-class PayloadPathKeyErr(ApiErr):
+class PayloadPathKeyError(ApiError):
     """
     describes failure to access some path within (json) dictionary of response's payload.
     """
@@ -201,11 +239,7 @@ class PayloadPathKeyErr(ApiErr):
                f'{self.resp.payload}'
 
 
-class OperationErr(CliErr, metaclass=ABCMeta):
-    pass
-
-
-class ApiUnavailable(OperationErr):
+class ApiUnavailable(OperationalError):
     @staticmethod
     def exit_code() -> ExitCode:
         return ExitCode.ApiUnavailable
@@ -215,20 +249,3 @@ class ApiUnavailable(OperationErr):
 
     def __str__(self) -> str:
         return f'Failed to retrieve API address from {self.base_url}'
-
-
-class EntityNotFound(OperationErr):
-    @staticmethod
-    def exit_code() -> ExitCode:
-        return ExitCode.EntityNotFound
-
-    def __init__(self, name: str, existing: Optional[list]):
-        self.name = name
-        self.existing = existing
-
-    def __str__(self) -> str:
-        if self.existing is not None:
-            return f'Failed to find \'{self.name}\' in the following ' \
-                   f'list of available entities: {", ".join(self.existing)}'
-        else:
-            return f'Failed to find \'{self.name}\''
