@@ -8,7 +8,7 @@ import logging
 from upsolver.client.query import RestQueryApi
 from upsolver.client.requester import Requester
 from upsolver.client.auth_filler import TokenAuthFiller
-import upsolver.client.errors as errors
+import upsolver.client.exceptions as exceptions
 
 from upsolver.dbapi.utils import (
     get_duration_in_seconds,
@@ -38,12 +38,12 @@ class Connection:
                 poller_builder=lambda to_sec: DBAPIResponsePoller(max_time_sec=to_sec)
             )
         except Exception as err:
-            raise errors.OperationalError("Failed to initialize connection with Upsolver API") from err
+            raise exceptions.OperationalError("Failed to initialize connection with Upsolver API") from err
 
         try:
             self._timeout = get_duration_in_seconds(timeout_sec)
-        except errors.InvalidOptionError as err:
-            raise errors.InvalidOptionError("Timeout can't be parsed") from err
+        except exceptions.InvalidOptionError as err:
+            raise exceptions.InvalidOptionError("Timeout can't be parsed") from err
         self._closed = False
 
     def __enter__(self):
@@ -68,10 +68,10 @@ class Connection:
         return self._closed
 
     def commit(self):
-        raise errors.NotSupportedError
+        raise exceptions.NotSupportedError
 
     def rollback(self):
-        raise errors.NotSupportedError
+        raise exceptions.NotSupportedError
 
     @check_closed
     def query(self, command):

@@ -4,7 +4,7 @@ from typing import Iterator
 from upsolver.client.entities import ExecutionResult
 from upsolver.client.poller import ResponsePollerBuilder
 from upsolver.client.requester import Requester
-from upsolver.client import errors
+from upsolver.client import exceptions
 
 
 class QueryApi(metaclass=ABCMeta):
@@ -27,7 +27,7 @@ class RestQueryApi(QueryApi):
         self.poller_builder = poller_builder
 
     def check_syntax(self, expression: str) -> list:
-        raise errors.NotSupportedError()
+        raise exceptions.NotSupportedError()
 
     _NextResultPath = str  # results are paged, with "next pointer" being a path of url
 

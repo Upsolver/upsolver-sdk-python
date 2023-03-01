@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional, Protocol, Type, TypeVar
 
 from yarl import URL
 
-from .client import errors
+from .client import exceptions
 
 seconds_per_unit = {'s': 1.0, 'm': 60.0}
 
@@ -18,7 +18,7 @@ def convert_time_str(value: Any) -> Any:
     try:
         return convert_to_seconds(value)
     except Exception:
-        raise errors.InvalidOptionError(f'Cannot convert \'{value}\' to seconds '
+        raise exceptions.InvalidOptionError(f'Cannot convert \'{value}\' to seconds '
                                       '(valid examples: 0.25s, 1.5m)')
 
 

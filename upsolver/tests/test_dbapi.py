@@ -2,7 +2,7 @@ import pytest
 import types
 
 import upsolver.dbapi as upsolver
-import upsolver.client.errors as errors
+import upsolver.client.exceptions as exceptions
 
 SELECT_COMMAND = "SELECT * FROM orders_transformed_data LIMIT 6;"
 SELECT_RESPONSE = {
@@ -110,7 +110,7 @@ def test_closed_cursor():
     cursor = conn.cursor()
     cursor.close()
 
-    with pytest.raises(errors.InterfaceError):
+    with pytest.raises(exceptions.InterfaceError):
         cursor.execute(SELECT_COMMAND)
 
 
@@ -118,17 +118,17 @@ def test_closed_connection():
     conn = upsolver.connect(None, None)
     conn.close()
 
-    with pytest.raises(errors.InterfaceError):
+    with pytest.raises(exceptions.InterfaceError):
         conn.cursor()
 
 
 def test_wrong_command(mocker):
-    mocker.patch('upsolver.client.query.RestQueryApi.execute', side_effect=errors.RequestError)
+    mocker.patch('upsolver.client.query.RestQueryApi.execute', side_effect=exceptions.RequestError)
 
     conn = upsolver.connect(None, None)
     cursor = conn.cursor()
 
-    with pytest.raises(errors.OperationalError):
+    with pytest.raises(exceptions.OperationalError):
         cursor.execute(SELECT_COMMAND)
 
 
@@ -136,5 +136,5 @@ def test_missing_credentials():
     conn = upsolver.connect(None, None)
     cursor = conn.cursor()
 
-    with pytest.raises(errors.DatabaseError):
+    with pytest.raises(exceptions.DatabaseError):
         cursor.execute(SELECT_COMMAND)

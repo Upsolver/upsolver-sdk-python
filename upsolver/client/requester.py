@@ -4,7 +4,7 @@ from typing import Callable, Optional
 from requests import Request, Response, Session
 from yarl import URL
 
-from upsolver.client import errors
+from upsolver.client import exceptions
 from upsolver.client.auth_filler import AuthFiller
 from upsolver.client.response import UpsolverResponse
 from upsolver.utils import get_logger
@@ -19,15 +19,15 @@ ResponseValidator = Callable[[Response], Response]
 def default_resp_validator(resp: Response) -> Response:
     uresp = UpsolverResponse(resp)
     if resp.status_code == 403:
-        raise errors.AuthError(uresp)
+        raise exceptions.AuthError(uresp)
     if int(resp.status_code / 100) != 2:
-        raise errors.ApiError(uresp)
+        raise exceptions.ApiError(uresp)
     return resp
 
 
 class Requester(object):
     """
-    A very thin wrapper around requests package that handles common errors and response
+    A very thin wrapper around requests package that handles common exceptions and response
     transformations to usable objects (e.g. extracting payload as json automatically).
 
     Requester is not meant  "hide" the fact that we're using the requests package. It simply

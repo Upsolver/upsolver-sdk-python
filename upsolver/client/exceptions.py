@@ -103,7 +103,7 @@ class NotSupportedError(DatabaseError, NotImplementedError):
 
     """
 
-# Request Errors
+
 class RequestError(OperationalError):
     """
     Generalized error that occured when issuing a request to the Upsolver API
