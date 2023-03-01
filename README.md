@@ -150,11 +150,11 @@ See Upsolver's [SQL Command Reference](https://docs.upsolver.com/sqlake/sql-comm
 
 ## Further reading
 
+[Upsolver](https://upsolver.com)
+
 [Documentation](https://docs.upsolver.com/sqlake/sql-command-reference) of Upsolver SQL
 
 [upsolver-sdk-python](https://github.com/Upsolver/upsolver-sdk-python) - GitHub repository with upsolver SDK for Python language
-
-[Upsolver](https://upsolver.com) website
 
 [SQLake](https://sqlake.upsolver.com/) main page
 
