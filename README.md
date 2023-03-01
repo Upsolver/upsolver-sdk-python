@@ -2,61 +2,32 @@
 
 ## What is Upsolver
 
-[Upsolver](https://upsolver.com) is a Data Preparation Platform that lets you prepare and deliver data at massive scale in a matter of minutes. Citing another [review on G2](https://www.g2.com/products/upsolver/reviews):
+[Upsolver](https://upsolver.com) is a Data Preparation Platform that lets you prepare and deliver data at massive scale in a matter of minutes. Upsolver lets you build continuous pipelines for your cloud data lake
+using SQL for pipeline automation.
 
-```text
-Upsolver lets you build at-scale data pipelines in days rather than months.
-You can ingest complex and streaming data via built-in connectors,
-define transformations using SQL commands,
-and output tables continuously to your data lake or cloud data warehouse. 
-With Upsolver you can deliver analytics pipelines 10X faster
-and make your data engineering 10X more productive.
-```
+## SQLake
 
-According to [crunchbase](https://www.crunchbase.com/organization/upsolver):
+[SQLake](https://docs.upsolver.com/sqlake) is Upsolvers new UI and SQL console allowing to execute commands and monitor pipelines in the UI. It also includes freee trial and access to variety of examples and tutorials.
 
-```text
-Upsolver lets you build continuous pipelines for your cloud data lake
-using SQL and pipeline automation.
-```
-
-## SQL Lake
-
-[SQL Lake](https://sqlake.upsolver.com) is Upsolvers new UI and SQL console allowing to execute commands and monitor pipelines in the UI. It also includes freee trial and access to variety of examples and tutorials.
-
-![Sql Workbench](./doc/img/SQLWorkbench-M.jpeg)
 
 ## What is DB API
 
-Pythonic dbapi defined in [pep-249](https://peps.python.org/pep-0249/)
-
-```text
-...  to encourage similarity between the Python
-modules that are used to access databases.
-```
-
-Many python libraries know to work with DB API connections out of the box, for example `pandas`, `SQLAlchemy` etc.
+Python's DB API 2.0 is defined in [pep-249](https://peps.python.org/pep-0249/). It defines an abstract API for connecting and working with databases in Python. Many python libraries support DB API v2.0 natively, for example `pandas`, `SQLAlchemy`, and more.
 
 ## Getting started
 
 ### Install Upsolver SDK for Python
+
+To use Upsolver SDK for Python you'll need Python interpreter of version greater than 3.7 
 
 ```bash
 # For release version:
 pip install upsolver-sdk-python
 # for latest development version
 pip install git+https://github.com/Upsolver/upsolver-sdk-python
-....
-....
-Installing collected packages: upsolver-sdk-python
-  Attempting uninstall: upsolver-sdk-python
-    Found existing installation: upsolver-sdk-python 0.1.0
-    Uninstalling upsolver-sdk-python-0.1.0:
-      Successfully uninstalled upsolver-sdk-python-0.1.0
-Successfully installed upsolver-sdk-python-0.1.0
 ```
 
-### Register Upsolver accoount
+### Register Upsolver account
 
 To register just navigate to [SQL Lake Sign Up form](https://sqlake.upsolver.com/signup). You'll have access to SQL workbench with examples and tutorials after completing the registration.
 
@@ -66,17 +37,17 @@ After login navigate to "[Settings](https://sqlake.upsolver.com/Settings)" and t
 
 You will need API token and API Url to access Upsolver programatically.
 
-![API Tokens screen](./doc/img/APITokens-m.jpeg)
+![API Tokens screen](./doc/img/APITokens-m.png)
 
 Then click "Generate" new token and save it for future use.
 
 ## Connections and cursors
 
-Pythonic access to SQL follows several simple steps:
+Connecting to SQLake using the python SDK involves a few simple steps:
 
-- create `Connection`
-- create `Cursor`
-- Query data
+- create a `Connection`
+- create a `Cursor`
+- execute query
 
 ```python
 # import upsolver DB API
@@ -112,7 +83,7 @@ for r in res:
 ['Teresa', 'Reed', '1080.72', '0.12']
 ```
 
-The result is not nice, so let's format it before showing here.
+We can use libraries to print the pretty-print the results:
 
 ```python
 from beautifultable import BeautifulTable
@@ -147,7 +118,7 @@ print(table)
 +-----------+----------+---------+---------+
 ```
 
-For the sake of this article I'm refering to tables that created using the SQL Lake sample "S3 to Athena".
+Note: The examples above use the sample data provided by the template "S3 to Athena" in SQLake
 
 ## We can use pandas too
 
@@ -175,15 +146,7 @@ dtypes: object(4)
 
 ## Upsolver SQL
 
-Upsolver supports very limited SQL syntax and not intended to work as SQL query engine. It's rather a tool for creating data pipelines using SQL syntax.
-
-At the time of writing the SQL supports only:
-
-- CREATE/ALTER/DROP table
-- CREATE/ALTER/DROP connection
-- CREATE/ALTER/DROP job
-
-whever DML flavor supported mostly as part of the job definition. However Upsolver constantly improves and enhances the functionality and hereafter this article publication the SQL syntax may be enhanced.
+See Upsolver's [SQL Command Reference](https://docs.upsolver.com/sqlake/sql-command-reference) for the supported SQL commands and syntax.
 
 ## Further reading
 
@@ -193,6 +156,6 @@ whever DML flavor supported mostly as part of the job definition. However Upsolv
 
 [Upsolver](https://upsolver.com) website
 
-[SQL Lake](https://sqlake.upsolver.com/) main page
+[SQLake](https://sqlake.upsolver.com/) main page
 
 [Python examples from this README](doc/dbapi-ex.py)
