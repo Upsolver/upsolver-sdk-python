@@ -150,7 +150,7 @@ See Upsolver's [SQL Command Reference](https://docs.upsolver.com/sqlake/sql-comm
 
 ## Further reading
 
-[Upsolver](https://upsolver.com)
+[upsolver.com](https://upsolver.com)
 
 [Documentation](https://docs.upsolver.com/sqlake/sql-command-reference) of Upsolver SQL
 
