@@ -1,4 +1,3 @@
-
 import json
 from abc import ABCMeta
 from json import JSONDecodeError
@@ -16,31 +15,27 @@ from upsolver.client.requester import UpsolverResponse
                                                      └───────┘
                                                          ▲
                                                          │
-                                  ┌──────────────────────────────────────────────────────────┐
-                          ┌───────┴───────┐                                           ┌──────┴─────────┐
-                          │ DatabaseError │                                           | InterfaceError |
-                          └───────────────┘                                           └────────────────┘
-                                  ▲                                                          |
-                                  │                                                ┌─────────┴──────────┐
-       ┌──────────────────────────┬───────────────────────────┐                    | InvalidOptionError |
-┌──────┴────────┐        ┌────────┴──────────┐        ┌───────┴──────────┐         └────────────────────┘
+                                  ┌───────────────────────────────────────────────────┐
+                          ┌───────┴───────┐                                    ┌──────┴─────────┐
+                          │ DatabaseError │                                    | InterfaceError |
+                          └───────────────┘                                    └────────────────┘
+                                  ▲
+                                  │
+       ┌──────────────────────────┬───────────────────────────┐
+┌──────┴────────┐        ┌────────┴──────────┐        ┌───────┴──────────┐
 | InternalError |        | NotSupportedError |        | OperationalError |
 └───────────────┘        └───────────────────┘        └──────────────────┘
                                                               ▲
                                                               |
-                                       ┌──────────────────────┴────────────────────────┐
-                                ┌──────┴───────┐                                ┌──────┴─────────┐
-                                │ RequestError │                                | ApiUnavailable |
-                                └──────────────┘                                └────────────────┘
-                                       ▲
-                                  ┌────┴─────┐
-                                  | ApiError |
-                                  └──────────┘
-                                       ▲
-          ┌────────────────────────────┴────────────────────────────────────────────────┐
-┌─────────┴───────────┐      ┌─────────┴─────────────┐      ┌─────┴────────┐      ┌─────┴─────┐
-│ PayloadPathKeyError │      │ PendingResultTimeout  │      | PayloadError |      | AuthError |
-└─────────────────────┘      └───────────────────────┘      └──────────────┘      └───────────┘
+                                      ┌───────────────────────┴────────────────────┐
+                                 ┌────┴─────┐                               ┌──────┴─────────┐
+                                 | ApiError │                               | ApiUnavailable |
+                                 └──────────┘                               └────────────────┘
+                                      ▲
+          ┌───────────────────────────┴─────────────────────────┬────────────────────┐
+┌─────────┴───────────┐     ┌─────────┴─────────────┐     ┌─────┴────────┐     ┌─────┴─────┐
+│ PayloadPathKeyError │     │ PendingResultTimeout  │     | PayloadError |     | AuthError |
+└─────────────────────┘     └───────────────────────┘     └──────────────┘     └───────────┘
 
 """
 
@@ -104,17 +99,9 @@ class NotSupportedError(DatabaseError, NotImplementedError):
     """
 
 
-class RequestError(OperationalError):
+class ApiError(OperationalError):
     """
-    Generalized error that occured when issuing a request to the Upsolver API
-    """
-    pass
-
-
-class ApiError(RequestError):
-    """
-    Invalid usage of API (invalid credentials, bad method call). In other words, we have a valid
-    http response object available and the status code is not 2XX.
+    Invalid usage of API (invalid credentials, bad method call).
     """
 
     def __init__(self, resp: UpsolverResponse) -> None:

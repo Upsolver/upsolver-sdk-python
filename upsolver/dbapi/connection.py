@@ -42,8 +42,8 @@ class Connection:
 
         try:
             self._timeout = get_duration_in_seconds(timeout_sec)
-        except exceptions.InvalidOptionError as err:
-            raise exceptions.InvalidOptionError("Timeout can't be parsed") from err
+        except exceptions.InterfaceError as err:
+            raise exceptions.InterfaceError("Timeout can't be parsed") from err
         self._closed = False
 
     def __enter__(self):

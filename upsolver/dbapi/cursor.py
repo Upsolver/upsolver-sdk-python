@@ -53,7 +53,7 @@ class Cursor:
         try:
             query_response = self._connection.query(operation)
             return self._prepare_query_results(query_response)
-        except exceptions.RequestError as err:
+        except exceptions.OperationalError as err:
             raise exceptions.OperationalError(err) from err
         except Exception as err:
             raise exceptions.DatabaseError(err) from err

@@ -123,7 +123,7 @@ def test_closed_connection():
 
 
 def test_wrong_command(mocker):
-    mocker.patch('upsolver.client.query.RestQueryApi.execute', side_effect=exceptions.RequestError)
+    mocker.patch('upsolver.client.query.RestQueryApi.execute', side_effect=exceptions.OperationalError)
 
     conn = upsolver.connect(None, None)
     cursor = conn.cursor()
