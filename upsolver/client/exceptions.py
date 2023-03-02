@@ -1,5 +1,4 @@
 import json
-from abc import ABCMeta
 from json import JSONDecodeError
 from typing import Optional
 
@@ -39,7 +38,7 @@ from upsolver.client.requester import UpsolverResponse
 
 """
 
-class Error(Exception, metaclass=ABCMeta):
+class Error(Exception):
     """Base error outlined in PEP 249."""
 
     def __str__(self) -> str:
