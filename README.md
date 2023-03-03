@@ -2,8 +2,7 @@
 
 ## What is Upsolver
 
-[Upsolver](https://upsolver.com) is a Data Preparation Platform that lets you prepare and deliver data at massive scale in a matter of minutes. Upsolver lets you build continuous pipelines for your cloud data lake
-using SQL for pipeline automation.
+[Upsolver](https://upsolver.com) enables you to use familiar SQL syntax to quickly build and deploy data pipelines, powered by a stream processing engine designed for cloud data lakes.
 
 ## SQLake
 
