@@ -36,7 +36,7 @@ After login navigate to "[Settings](https://sqlake.upsolver.com/Settings)" and t
 
 You will need API token and API Url to access Upsolver programatically.
 
-![API Tokens screen](./doc/img/APITokens-m.png)
+![API Tokens screen](https://github.com/Upsolver/upsolver-sdk-python/raw/build_package/doc/img/APITokens-m.png)
 
 Then click "Generate" new token and save it for future use.
 
@@ -141,7 +141,7 @@ Data columns (total 4 columns):
 dtypes: object(4)
 ```
 
-![`df.head()`](./doc/img/df.head-m.jpeg)
+![`df.head()`](https://github.com/Upsolver/upsolver-sdk-python/raw/build_package/doc/img/df.head-m.jpeg)
 
 ## Upsolver SQL
 
