@@ -41,6 +41,12 @@ jobs:
           asset_name: upsolver_sdk_python.tar.gz
           asset_content_type: application/tar+gz
 
+      - name: Publish distribution 📦 to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.TEST_PYPI_TOKEN_NESTLOGIC }}
+          repository_url: https://test.pypi.org/legacy/
+          
       - name: Upload Release Asset (built distribution)
         uses: actions/upload-release-asset@v1
         env:
