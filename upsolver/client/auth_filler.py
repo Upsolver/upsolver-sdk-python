@@ -13,25 +13,6 @@ Does not modify provided req object; returns modified copy.
 AuthFiller = Callable[[Request], Request]
 
 
-class CredsAuthFiller(object):
-    EmailHeader = 'X-Api-Email'
-    PasswordHeader = 'X-Api-Password'
-
-    def __init__(self, email: str, password: str) -> None:
-        self.email = email
-        self.password = password
-
-    def __call__(self, req: Request) -> Request:
-        assert req.headers.get(CredsAuthFiller.EmailHeader) is None
-        assert req.headers.get(CredsAuthFiller.PasswordHeader) is None
-        filled = copy.deepcopy(req)
-        filled.headers.update({
-            CredsAuthFiller.EmailHeader: self.email,
-            CredsAuthFiller.PasswordHeader: self.password
-        })
-        return filled
-
-
 class TokenAuthFiller(object):
     TokenHeader = 'Authorization'
 

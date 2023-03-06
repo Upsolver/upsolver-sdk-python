@@ -1,15 +1,9 @@
 import pytest
 import requests
 
-from upsolver.client.auth_filler import AuthFiller, CredsAuthFiller, TokenAuthFiller
+from upsolver.client.auth_filler import AuthFiller, TokenAuthFiller
 
-fillers: list = [
-    CredsAuthFiller('email', 'password'),
-    TokenAuthFiller('token')
-]
-
-
-@pytest.mark.parametrize('filler', fillers)
+@pytest.mark.parametrize('filler', [TokenAuthFiller('token')])
 def test_creates_new_req_object(filler: AuthFiller):
     print(filler)
     before = requests.Request()
