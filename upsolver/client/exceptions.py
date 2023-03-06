@@ -7,37 +7,6 @@ from yarl import URL
 from upsolver.client.requester import UpsolverResponse
 
 
-"""
-
-                                                     ┌───────┐
-                                                     | Error |
-                                                     └───────┘
-                                                         ▲
-                                                         │
-                                  ┌───────────────────────────────────────────────────┐
-                          ┌───────┴───────┐                                    ┌──────┴─────────┐
-                          │ DatabaseError │                                    | InterfaceError |
-                          └───────────────┘                                    └────────────────┘
-                                  ▲
-                                  │
-       ┌──────────────────────────┬───────────────────────────┐
-┌──────┴────────┐        ┌────────┴──────────┐        ┌───────┴──────────┐
-| InternalError |        | NotSupportedError |        | OperationalError |
-└───────────────┘        └───────────────────┘        └──────────────────┘
-                                                              ▲
-                                                              |
-                                      ┌───────────────────────┴────────────────────┐
-                                 ┌────┴─────┐                               ┌──────┴─────────┐
-                                 | ApiError │                               | ApiUnavailable |
-                                 └──────────┘                               └────────────────┘
-                                      ▲
-          ┌───────────────────────────┴─────────────────────────┬────────────────────┐
-┌─────────┴───────────┐     ┌─────────┴─────────────┐     ┌─────┴────────┐     ┌─────┴─────┐
-│ PayloadPathKeyError │     │ PendingResultTimeout  │     | PayloadError |     | AuthError |
-└─────────────────────┘     └───────────────────────┘     └──────────────┘     └───────────┘
-
-"""
-
 class Error(Exception):
     """Base error outlined in PEP 249."""
 
@@ -57,15 +26,7 @@ class InterfaceError(Error):
     """
 
 
-class InvalidOptionError(InterfaceError):
-    """
-    Operational error outlined in PEP 249.
-
-    Raised for errors in the database's operation.
-
-    """
-
-class DatabaseError(Error, RuntimeError):
+class DatabaseError(Error):
     """
     Database error outlined in PEP 249.
 
@@ -77,14 +38,6 @@ class OperationalError(DatabaseError):
     Operational error outlined in PEP 249.
 
     Raised for errors in the database's operation.
-
-    """
-
-class InternalError(DatabaseError):
-    """
-    Integrity error outlined in PEP 249.
-
-    Raised when the database encounters an internal error.
 
     """
 
@@ -187,12 +140,3 @@ class PayloadPathKeyError(ApiError):
 
         return f'Api Error{req_id_part}: failed to find {self.bad_path} in response payload' \
                f'{self.resp.payload}'
-
-
-class ApiUnavailable(OperationalError):
-
-    def __init__(self, base_url: URL) -> None:
-        self.base_url = base_url
-
-    def __str__(self) -> str:
-        return f'Failed to retrieve API address from {self.base_url}'
