@@ -2,8 +2,6 @@ import json
 from json import JSONDecodeError
 from typing import Optional
 
-from yarl import URL
-
 from upsolver.client.requester import UpsolverResponse
 
 
