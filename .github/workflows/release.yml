@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  release:
+    types: [ published ]
+    branches: [ develop ]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Determine Version
+        id: release-version
+        run: |
+          echo "::set-output name=full::${{ github.ref_name }}"
+          SIMPLE=$(echo ${{ github.ref_name }} | sed -e s/^v//)
+          echo "::set-output name=simple::$SIMPLE"
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ">=3.7"
+
+      - name: Install dependencies
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install
+
+      - name: Build package
+        run: poetry build
+
+      - name: Upload Release Asset (source distribution)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./dist/upsolver_sdk_python-${{ steps.release-version.outputs.simple }}.tar.gz
+          asset_name: upsolver_sdk_python.tar.gz
+          asset_content_type: application/tar+gz
+
+      - name: Publish distribution 📦 to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.TEST_PYPI_TOKEN_NESTLOGIC }}
+          repository_url: https://test.pypi.org/legacy/
+          
+      - name: Upload Release Asset (built distribution)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./dist/upsolver_sdk_python-${{ steps.release-version.outputs.simple }}-py3-none-any.whl
+          asset_name: upsolver_sdk_python-${{ steps.release-version.outputs.simple }}-py3-none-any.whl
+          asset_content_type: application/whl
