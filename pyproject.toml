@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "upsolver-sdk-python"
 version = "0.1.0"
-description = "Python API and SDK for Upsolver"
+description = "Python SDK for Upsolver"
 authors = ["Your Name <you@example.com>"]
 license = "TBD"
 readme = ["README.md", "upsolver/dbapi/README.md"]
