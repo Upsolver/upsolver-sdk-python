@@ -1,6 +1,5 @@
 import copy
 from typing import Callable
-
 from requests import Request
 
 """

@@ -1,12 +1,10 @@
 import time
 from functools import wraps
-
 from upsolver.client.requester import Requester
 from upsolver.client.response import UpsolverResponse
 from upsolver.client.poller import SimpleResponsePoller
 from upsolver.utils import convert_time_str
-
-import upsolver.client.exceptions as exceptions
+from upsolver.client.exceptions import InterfaceError, ApiError, PayloadError, PendingResultTimeout
 
 
 def get_duration_in_seconds(duration):
@@ -23,7 +21,7 @@ def check_closed(func):
     @wraps(func)
     def wrapped(self, *args, **kwargs):
         if self.closed:
-            raise exceptions.InterfaceError("Object is closed and can't be used")
+            raise InterfaceError("Object is closed and can't be used")
         return func(self, *args, **kwargs)
     return wrapped
 
@@ -38,7 +36,7 @@ class DBAPIResponsePoller(SimpleResponsePoller):
         :param start_time: time (in seconds since the Epoch) at which polling has started.
         """
         def raise_err() -> None:
-            raise exceptions.ApiError(resp)
+            raise ApiError(resp)
 
         sc = resp.status_code
         if int(sc / 100) != 2:
@@ -46,7 +44,7 @@ class DBAPIResponsePoller(SimpleResponsePoller):
 
         def verify_json(j: dict) -> dict:
             if 'status' not in j:
-                raise exceptions.PayloadError(resp, 'expected "status" field in response object')
+                raise PayloadError(resp, 'expected "status" field in response object')
             return j
 
         def extract_json() -> dict:
@@ -55,10 +53,10 @@ class DBAPIResponsePoller(SimpleResponsePoller):
                 return resp_json
             elif type(resp_json[0]) is dict:
                 if len(resp_json) > 1:
-                    raise exceptions.PayloadError(resp, 'got list with multiple objects')
+                    raise PayloadError(resp, 'got list with multiple objects')
                 return resp_json[0]
             else:
-                raise exceptions.PayloadError(resp, 'failed to find result object')
+                raise PayloadError(resp, 'failed to find result object')
 
         rjson = verify_json(extract_json())
         status = rjson['status']
@@ -74,7 +72,7 @@ class DBAPIResponsePoller(SimpleResponsePoller):
         if is_pending:
             time_spent_sec = int(time.time() - start_time)
             if (self.max_time_sec is not None) and (time_spent_sec >= self.max_time_sec):
-                raise exceptions.PendingResultTimeout(resp)
+                raise PendingResultTimeout(resp)
 
             time.sleep(self.wait_interval_sec)
             return self._get_result_helper(

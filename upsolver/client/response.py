@@ -1,8 +1,6 @@
+import upsolver.client.exceptions as exceptions
 from typing import Any, Optional
-
 from requests import Response
-
-from upsolver.client import exceptions
 from upsolver.utils import NestedDictAccessor
 
 

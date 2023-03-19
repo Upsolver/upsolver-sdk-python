@@ -1,12 +1,10 @@
 import copy
-
 import pytest
 from requests import Request
 from requests_mock import Mocker as RequestsMocker
 from requests_mock import NoMockAddress
 from yarl import URL
-
-import upsolver.client.exceptions as exceptions
+from upsolver.client.exceptions import ApiError
 from upsolver.client.requester import Requester, default_resp_validator
 
 # some tests check things that apply to all request methods. Such tests should be
@@ -47,7 +45,7 @@ def test_response_validation(
 
     r_method = getattr(r, method)
     if fail:
-        with pytest.raises(exceptions.ApiError) as err:
+        with pytest.raises(ApiError) as err:
             r_method(path)
         assert err.value.resp.status_code == sc
     else:

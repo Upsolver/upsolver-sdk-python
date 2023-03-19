@@ -1,7 +1,6 @@
 import time
 from typing import Callable, Optional
-
-from upsolver.client import exceptions
+from upsolver.client.exceptions import ApiError, PayloadError, PendingResultTimeout
 from upsolver.client.entities import ExecutionResult
 from upsolver.client.requester import Requester
 from upsolver.client.response import UpsolverResponse
@@ -48,7 +47,7 @@ class SimpleResponsePoller(object):
         :param start_time: time (in seconds since the Epoch) at which polling has started.
         """
         def raise_err() -> None:
-            raise exceptions.ApiError(resp)
+            raise ApiError(resp)
 
         sc = resp.status_code
         if int(sc / 100) != 2:
@@ -56,7 +55,7 @@ class SimpleResponsePoller(object):
 
         def verify_json(j: dict) -> dict:
             if 'status' not in j:
-                raise exceptions.PayloadError(resp, 'expected "status" field in response object')
+                raise PayloadError(resp, 'expected "status" field in response object')
             return j
 
         def extract_json() -> dict:
@@ -65,10 +64,10 @@ class SimpleResponsePoller(object):
                 return resp_json
             elif type(resp_json[0]) is dict:
                 if len(resp_json) > 1:
-                    raise exceptions.PayloadError(resp, 'got list with multiple objects')
+                    raise PayloadError(resp, 'got list with multiple objects')
                 return resp_json[0]
             else:
-                raise exceptions.PayloadError(resp, 'failed to find result object')
+                raise PayloadError(resp, 'failed to find result object')
 
         rjson = verify_json(extract_json())
         status = rjson['status']
@@ -84,7 +83,7 @@ class SimpleResponsePoller(object):
         if is_pending:
             time_spent_sec = int(time.time() - start_time)
             if (self.max_time_sec is not None) and (time_spent_sec >= self.max_time_sec):
-                raise exceptions.PendingResultTimeout(resp)
+                raise PendingResultTimeout(resp)
 
             time.sleep(self.wait_interval_sec)
             return self._get_result_helper(

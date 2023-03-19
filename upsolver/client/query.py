@@ -1,9 +1,8 @@
 from typing import Iterator
-
 from upsolver.client.entities import ExecutionResult
 from upsolver.client.poller import ResponsePollerBuilder
 from upsolver.client.requester import Requester
-from upsolver.client import exceptions
+from upsolver.client.exceptions import NotSupportedError
 
 
 class RestQueryApi():
@@ -12,9 +11,7 @@ class RestQueryApi():
         self.poller_builder = poller_builder
 
     def check_syntax(self, expression: str) -> list:
-        raise exceptions.NotSupportedError()
-
-    _NextResultPath = str  # results are paged, with "next pointer" being a path of url
+        raise NotSupportedError()
 
     def execute(self, query: str, timeout_sec: float) -> Iterator[ExecutionResult]:
         assert len(query) > 0

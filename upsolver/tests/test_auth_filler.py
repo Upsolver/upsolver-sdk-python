@@ -1,6 +1,5 @@
 import pytest
 import requests
-
 from upsolver.client.auth_filler import AuthFiller, TokenAuthFiller
 
 @pytest.mark.parametrize('filler', [TokenAuthFiller('token')])

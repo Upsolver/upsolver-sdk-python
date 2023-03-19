@@ -1,5 +1,4 @@
 import pytest
-
 from upsolver.utils import NestedDictAccessor
 
 

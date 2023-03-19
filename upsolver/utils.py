@@ -2,10 +2,8 @@ import logging
 from logging import Logger
 from pathlib import Path
 from typing import Any, Dict, Optional, Protocol, Type, TypeVar
-
 from yarl import URL
-
-from .client import exceptions
+import upsolver.client.exceptions as exceptions
 
 seconds_per_unit = {'s': 1.0, 'm': 60.0}
 

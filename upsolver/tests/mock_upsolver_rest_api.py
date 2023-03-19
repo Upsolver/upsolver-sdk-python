@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import Optional
-
 from requests_mock import Mocker as RequestsMocker
 
 DEFAULT_ORG = 'testorg'

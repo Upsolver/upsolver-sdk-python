@@ -1,10 +1,9 @@
+from __future__ import annotations
+import upsolver.client.exceptions as exceptions
 import uuid
 from typing import Callable, Optional
-
 from requests import Request, Response, Session
 from yarl import URL
-
-from upsolver.client import exceptions
 from upsolver.client.auth_filler import AuthFiller
 from upsolver.client.response import UpsolverResponse
 from upsolver.utils import get_logger
