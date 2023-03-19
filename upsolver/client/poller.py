@@ -1,7 +1,6 @@
 import time
 from typing import Callable, Optional
 from upsolver.client.exceptions import ApiError, PayloadError, PendingResultTimeout
-from upsolver.client.entities import ExecutionResult
 from upsolver.client.requester import Requester
 from upsolver.client.response import UpsolverResponse
 
@@ -15,8 +14,6 @@ inputs:
 
 outputs:
 - ExecutionResult is the result for the initial response given in the inputs
-- an optional NextResultPath that can be queried for further results (e.g. when performing a
-  SELECT the response maybe have multiple parts).
 """
 ResponsePoller = Callable[
     [Requester, UpsolverResponse],
@@ -27,6 +24,7 @@ ResponsePoller = Callable[
 """
 Build a ResponsePoller that will timeout after the provided interval.
 """
+ExecutionResult = list
 TimeoutSec = float
 ResponsePollerBuilder = Callable[[TimeoutSec], ResponsePoller]
 

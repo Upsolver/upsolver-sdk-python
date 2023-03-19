@@ -1,9 +1,9 @@
 from typing import Iterator
-from upsolver.client.entities import ExecutionResult
 from upsolver.client.poller import ResponsePollerBuilder
 from upsolver.client.requester import Requester
 from upsolver.client.exceptions import NotSupportedError
 
+ExecutionResult = list
 
 class RestQueryApi():
     def __init__(self, requester: Requester, poller_builder: ResponsePollerBuilder):

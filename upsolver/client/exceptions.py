@@ -7,12 +7,6 @@ from upsolver.client.requester import UpsolverResponse
 class Error(Exception):
     """Base error outlined in PEP 249."""
 
-    def __str__(self) -> str:
-        # make an effort to extract a message
-        for msg in [m for m in self.args if type(m) == str]:
-            return msg
-
-        return self.__class__.__name__
 
 class InterfaceError(Error):
     """

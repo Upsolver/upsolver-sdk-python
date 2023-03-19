@@ -43,7 +43,7 @@ class Cursor:
             query_response = self._connection.query(operation)
             return self._prepare_query_results(query_response)
         except OperationalError as err:
-            raise OperationalError(err) from err
+            raise OperationalError(f'Wrong SQL query: {err}')
         except Exception as err:
             raise DatabaseError(err) from err
 

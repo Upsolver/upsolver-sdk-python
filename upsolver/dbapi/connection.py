@@ -4,17 +4,11 @@ https://www.python.org/dev/peps/pep-0249/ .
 
 """
 import logging
-
 from upsolver.client.query import RestQueryApi
 from upsolver.client.requester import Requester
 from upsolver.client.auth_filler import TokenAuthFiller
 from upsolver.client.exceptions import OperationalError, InterfaceError, NotSupportedError
-
-from upsolver.dbapi.utils import (
-    get_duration_in_seconds,
-    check_closed,
-    DBAPIResponsePoller
-)
+from upsolver.dbapi.utils import get_duration_in_seconds, check_closed, DBAPIResponsePoller
 from upsolver.dbapi.cursor import Cursor
 
 logger = logging.getLogger(__name__)
