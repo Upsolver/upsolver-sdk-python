@@ -1,5 +1,5 @@
 from __future__ import annotations
-import upsolver.client.exceptions as exceptions
+from upsolver.client.exceptions import AuthError, ApiError
 import uuid
 from typing import Callable, Optional
 from requests import Request, Response, Session
@@ -18,9 +18,9 @@ ResponseValidator = Callable[[Response], Response]
 def default_resp_validator(resp: Response) -> Response:
     uresp = UpsolverResponse(resp)
     if resp.status_code == 403:
-        raise exceptions.AuthError(uresp)
+        raise AuthError(uresp)
     if int(resp.status_code / 100) != 2:
-        raise exceptions.ApiError(uresp)
+        raise ApiError(uresp)
     return resp
 
 

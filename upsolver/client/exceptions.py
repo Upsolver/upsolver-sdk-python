@@ -1,7 +1,7 @@
 import json
 from json import JSONDecodeError
 from typing import Optional
-from upsolver.client.requester import UpsolverResponse
+from upsolver.client.response import UpsolverResponse
 
 
 class Error(Exception):
