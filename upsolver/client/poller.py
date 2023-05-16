@@ -95,7 +95,7 @@ class SimpleResponsePoller(object):
             if rjson['kind'] == 'upsolver_scalar_query_response':
                 scalar = result['scalar']
                 column_name = [scalar['valueType']]
-                data_w_columns: ExecutionResult = [dict(zip([column_name], [scalar]))]
+                data_w_columns: ExecutionResult = [dict(zip([column_name], [scalar['value']]))]
             else:
                 grid = result['grid']  # columns, data, ...
                 column_name = [c['name'] for c in grid['columns']]

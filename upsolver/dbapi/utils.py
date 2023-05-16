@@ -86,7 +86,7 @@ class DBAPIResponsePoller(SimpleResponsePoller):
             if rjson['kind'] == 'upsolver_scalar_query_response':
                 scalar = result['scalar']
                 columns = [{'name': scalar['valueType'], 'columnType': {'clazz': 'StringColumnType'}}]
-                return {'columns': columns, 'data': [scalar]}, result.get('next')
+                return {'columns': columns, 'data': [scalar['value']]}, result.get('next')
             else:
                 result['grid']['has_next_page'] = result.get('next') is not None
                 return result['grid'], result.get('next')
