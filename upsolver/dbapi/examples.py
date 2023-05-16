@@ -76,3 +76,9 @@ try:
 except BaseException as e:
     print('Caught error on closed connection')
 # %%
+job_name = '' # Job name here
+print('Execute a `SHOW CREATE` statement:')
+result1 = cursor.execute(f'show create job {job_name};')
+print('create job statement:')
+result2 = cursor.fetchone()
+print(result2)
