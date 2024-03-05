@@ -18,7 +18,6 @@ jobs:
           SIMPLE=$(echo ${{ github.ref_name }} | sed -e s/^v//)
           echo "simple=$SIMPLE" >> $GITHUB_OUTPUT
 
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
