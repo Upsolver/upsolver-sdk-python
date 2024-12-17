@@ -1,4 +1,4 @@
-# Using Upsolver with DBAPI in python
+# Using Upsolver with DBAPI in python -adding tests
 
 ## What is Upsolver
 
